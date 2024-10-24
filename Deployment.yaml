@@ -2,6 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: dotnetworld
+  namespace: demo-fargate
+  labels: 
+    app: demofargate
 spec:
   selector:
     matchLabels:
@@ -30,9 +33,7 @@ spec:
  selector:
    app: demofargate
  ports:
-   - name: client
+   - name: http
      protocol: TCP
      port: 80
-     nodePort: 32080
- selector:
-   app: demofargate
+     targetPort: 80
