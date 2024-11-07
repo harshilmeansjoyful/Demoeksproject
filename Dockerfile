@@ -4,7 +4,8 @@ WORKDIR /app
 # Copy csproj and restore as distinct layers
 COPY *.csproj ./
 RUN dotnet restore
-
+FROM mcr.microsoft.com/dotnet/aspnet:2.1 AS base
+WORKDIR /app
 # Copy everything else and build
 COPY . ./
 RUN dotnet publish -c Release -o out
