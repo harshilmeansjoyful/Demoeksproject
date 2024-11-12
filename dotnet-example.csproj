@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <Project Sdk="Microsoft.NET.Sdk.Web"> />
   </ItemGroup>
 
 </Project>
