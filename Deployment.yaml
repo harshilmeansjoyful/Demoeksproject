@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: dotnetworld
-        image: 195275634008.dkr.ecr.ap-south-1.amazonaws.com/demoecr:latest
+        image: 034362066826.dkr.ecr.us-east-1.amazonaws.com/demoecrrepo:IMAGEID
         ports:
         - containerPort: 80
 ---
