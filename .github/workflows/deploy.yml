@@ -1,4 +1,4 @@
-name: Build and Push to ECR
+name: Build Push Deploy
 
 on:
   push:
@@ -8,36 +8,49 @@ on:
 env:
   AWS_REGION: eu-north-1
   ECR_REPOSITORY: demoeksproject
+  EKS_CLUSTER: my-eks-cluster
+  DEPLOYMENT_NAME: demoeksproject
+  CONTAINER_NAME: demoeksproject
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Login to Amazon ECR
+      - name: Login to ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build Docker image
+      - name: Build Docker Image
         run: |
           docker build -t $ECR_REPOSITORY:${{ github.sha }} .
 
-      - name: Tag Docker image
+      - name: Tag Docker Image
         run: |
           docker tag $ECR_REPOSITORY:${{ github.sha }} \
           ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:${{ github.sha }}
 
-      - name: Push Docker image to ECR
+      - name: Push Docker Image
         run: |
           docker push \
           ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:${{ github.sha }}
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --region $AWS_REGION --name $EKS_CLUSTER
+
+      - name: Deploy to EKS
+        run: |
+          kubectl set image deployment/$DEPLOYMENT_NAME \
+          $CONTAINER_NAME=${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:${{ github.sha }}
