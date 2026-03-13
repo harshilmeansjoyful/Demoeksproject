@@ -38,3 +38,4 @@ jobs:
         run: |
           aws eks update-kubeconfig --name Demo-cluster --region ap-south-1
           kubectl apply -f Deployment.yaml         
+
